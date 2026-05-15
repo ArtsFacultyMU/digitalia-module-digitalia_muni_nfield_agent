@@ -1,0 +1,95 @@
+# Field storage.
+field.storage_settings.dm_field_agent:
+  type: mapping
+  label: Example storage settings
+  mapping:
+    foo:
+      type: string
+      label: Foo
+
+# Field instance.
+field.field_settings.dm_field_agent:
+  type: mapping
+  label: Example field settings
+  mapping:
+    bar:
+      type: string
+      label: Bar
+
+# Default value.
+field.value.dm_field_agent:
+  type: mapping
+  label: Default value
+  mapping:
+    role:
+      type: string
+      label: Role
+    agent_type:
+      type: string
+      label: Agent type
+    agent_tid:
+      type: string
+      label: Agent TID
+    name:
+      type: string
+      label: Name
+    orcid:
+      type: string
+      label: ORCID
+    first_names:
+      type: text
+      label: First names
+    last_names:
+      type: text
+      label: Last names
+    ror:
+      type: string
+      label: ROR
+    institution_affiliation:
+      type: text
+      label: Institution (Affiliation if person)
+    department_tid:
+      type: string
+      label: Department TID
+    department:
+      type: text
+      label: Department
+    contact:
+      type: text
+      label: Contact
+    alternative_id:
+      type: string
+      label: Alternative ID
+    alternative_id_type:
+      type: string
+      label: Alternative ID type
+    link:
+      type: uri
+      label: Link
+    note:
+      type: text
+      label: Note
+    private_note:
+      type: text
+      label: Private note
+    extra:
+      type: text
+      label: Extra
+
+# Field widget.
+field.widget.settings.dm_field_agent:
+  type: mapping
+  label: Example widget settings
+  mapping:
+    foo:
+      type: string
+      label: Foo
+
+# Field formatter.
+field.formatter.settings.dm_field_agent_default:
+  type: mapping
+  label: Example formatter settings
+  mapping:
+    foo:
+      type: string
+      label: Foo

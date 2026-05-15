@@ -1,0 +1,326 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\digitalia_muni_nfield_agent\Plugin\Field\FieldType;
+
+use Drupal\Component\Utility\Random;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\TypedData\DataDefinition;
+
+/**
+ * Defines the 'dm_field_agent' field type.
+ *
+ * @FieldType(
+ *   id = "dm_field_agent",
+ *   label = @Translation("Agent"),
+ *   description = @Translation("Some description."),
+ *   default_widget = "dm_field_agent",
+ *   default_formatter = "dm_field_agent_default",
+ * )
+ */
+final class AgentItem extends FieldItemBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultStorageSettings(): array {
+    $settings = ['foo' => 'example'];
+    return $settings + parent::defaultStorageSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
+    $settings = $this->getSettings();
+
+    $element['foo'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Foo'),
+      '#default_value' => $settings['foo'],
+      '#disabled' => $has_data,
+    ];
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultFieldSettings(): array {
+    $settings = ['bar' => 'example'];
+    return $settings + parent::defaultFieldSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldSettingsForm(array $form, FormStateInterface $form_state): array {
+    $settings = $this->getSettings();
+
+    $element['bar'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Bar'),
+      '#default_value' => $settings['bar'],
+    ];
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isEmpty(): bool {
+    return $this->role === NULL && $this->agent_type === NULL && $this->agent_tid === NULL && $this->name === NULL && $this->orcid === NULL && $this->first_names === NULL && $this->last_names === NULL && $this->ror === NULL && $this->institution_affiliation === NULL && $this->department_tid === NULL && $this->department === NULL && $this->contact === NULL && $this->alternative_id === NULL && $this->alternative_id_type === NULL && $this->link === NULL && $this->note === NULL && $this->private_note === NULL && $this->extra === NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition): array {
+
+    $properties['role'] = DataDefinition::create('string')
+      ->setLabel(t('Role'));
+    $properties['agent_type'] = DataDefinition::create('string')
+      ->setLabel(t('Agent type'));
+    $properties['agent_tid'] = DataDefinition::create('string')
+      ->setLabel(t('Agent TID'));
+    $properties['name'] = DataDefinition::create('string')
+      ->setLabel(t('Name'));
+    $properties['orcid'] = DataDefinition::create('string')
+      ->setLabel(t('ORCID'));
+    $properties['first_names'] = DataDefinition::create('string')
+      ->setLabel(t('First names'));
+    $properties['last_names'] = DataDefinition::create('string')
+      ->setLabel(t('Last names'));
+    $properties['ror'] = DataDefinition::create('string')
+      ->setLabel(t('ROR'));
+    $properties['institution_affiliation'] = DataDefinition::create('string')
+      ->setLabel(t('Institution (Affiliation if person)'));
+    $properties['department_tid'] = DataDefinition::create('string')
+      ->setLabel(t('Department TID'));
+    $properties['department'] = DataDefinition::create('string')
+      ->setLabel(t('Department'));
+    $properties['contact'] = DataDefinition::create('string')
+      ->setLabel(t('Contact'));
+    $properties['alternative_id'] = DataDefinition::create('string')
+      ->setLabel(t('Alternative ID'));
+    $properties['alternative_id_type'] = DataDefinition::create('string')
+      ->setLabel(t('Alternative ID type'));
+    $properties['link'] = DataDefinition::create('uri')
+      ->setLabel(t('Link'));
+    $properties['note'] = DataDefinition::create('string')
+      ->setLabel(t('Note'));
+    $properties['private_note'] = DataDefinition::create('string')
+      ->setLabel(t('Private note'));
+    $properties['extra'] = DataDefinition::create('string')
+      ->setLabel(t('Extra'));
+
+    return $properties;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConstraints(): array {
+    $constraints = parent::getConstraints();
+
+    $options['role']['AllowedValues'] = array_keys(AgentItem::allowedRoleValues());
+
+    $options['role']['NotBlank'] = [];
+
+    $options['agent_type']['AllowedValues'] = array_keys(AgentItem::allowedAgentTypeValues());
+
+    $options['agent_type']['NotBlank'] = [];
+
+    $options['name']['NotBlank'] = [];
+
+    $options['alternative_id_type']['AllowedValues'] = array_keys(AgentItem::allowedAlternativeIDTypeValues());
+
+    $constraint_manager = \Drupal::typedDataManager()->getValidationConstraintManager();
+    $constraints[] = $constraint_manager->create('ComplexData', $options);
+    // @todo Add more constraints here.
+    return $constraints;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function schema(FieldStorageDefinitionInterface $field_definition): array {
+
+    $columns = [
+      'role' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'agent_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'agent_tid' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'orcid' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'first_names' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'last_names' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'ror' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'institution_affiliation' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'department_tid' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'department' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'contact' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'alternative_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'alternative_id_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'link' => [
+        'type' => 'varchar',
+        'length' => 2048,
+      ],
+      'note' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'private_note' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+      'extra' => [
+        'type' => 'text',
+        'size' => 'big',
+      ],
+    ];
+
+    $schema = [
+      'columns' => $columns,
+      // @DCG Add indexes here if necessary.
+    ];
+
+    return $schema;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function generateSampleValue(FieldDefinitionInterface $field_definition): array {
+
+    $random = new Random();
+
+    $values['role'] = array_rand(self::allowedRoleValues());
+
+    $values['agent_type'] = array_rand(self::allowedAgentTypeValues());
+
+    $values['agent_tid'] = $random->word(mt_rand(1, 255));
+
+    $values['name'] = $random->word(mt_rand(1, 255));
+
+    $values['orcid'] = $random->word(mt_rand(1, 255));
+
+    $values['first_names'] = $random->paragraphs(5);
+
+    $values['last_names'] = $random->paragraphs(5);
+
+    $values['ror'] = $random->word(mt_rand(1, 255));
+
+    $values['institution_affiliation'] = $random->paragraphs(5);
+
+    $values['department_tid'] = $random->word(mt_rand(1, 255));
+
+    $values['department'] = $random->paragraphs(5);
+
+    $values['contact'] = $random->paragraphs(5);
+
+    $values['alternative_id'] = $random->word(mt_rand(1, 255));
+
+    $values['alternative_id_type'] = array_rand(self::allowedAlternativeIDTypeValues());
+
+    $tlds = ['com', 'net', 'gov', 'org', 'edu', 'biz', 'info'];
+    $domain_length = mt_rand(7, 15);
+    $protocol = mt_rand(0, 1) ? 'https' : 'http';
+    $www = mt_rand(0, 1) ? 'www' : '';
+    $domain = $random->word($domain_length);
+    $tld = $tlds[mt_rand(0, (count($tlds) - 1))];
+    $values['link'] = "$protocol://$www.$domain.$tld";
+
+    $values['note'] = $random->paragraphs(5);
+
+    $values['private_note'] = $random->paragraphs(5);
+
+    $values['extra'] = $random->paragraphs(5);
+
+    return $values;
+  }
+
+  /**
+   * Returns allowed values for 'role' sub-field.
+   */
+  public static function allowedRoleValues(): array {
+    // @todo Update allowed values.
+    return [
+      'alpha' => t('Alpha'),
+      'beta' => t('Beta'),
+      'gamma' => t('Gamma'),
+    ];
+  }
+
+  /**
+   * Returns allowed values for 'agent_type' sub-field.
+   */
+  public static function allowedAgentTypeValues(): array {
+    // @todo Update allowed values.
+    return [
+      'alpha' => t('Alpha'),
+      'beta' => t('Beta'),
+      'gamma' => t('Gamma'),
+    ];
+  }
+
+  /**
+   * Returns allowed values for 'alternative_id_type' sub-field.
+   */
+  public static function allowedAlternativeIDTypeValues(): array {
+    // @todo Update allowed values.
+    return [
+      'alpha' => t('Alpha'),
+      'beta' => t('Beta'),
+      'gamma' => t('Gamma'),
+    ];
+  }
+
+}
