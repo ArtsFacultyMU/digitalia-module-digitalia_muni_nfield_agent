@@ -64,18 +64,9 @@ final class AgentWidget extends WidgetBase {
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
 
     $this->machine_name = $items->getName();
-    $this->element = $element;
-    $this->delta = $element["#delta"];
-    $this->weight = $element["#weight"];
-
-    //\Drupal::logger("DEBUG")->debug(print_r($this->machine_name, TRUE));
-    //\Drupal::logger("DEBUG")->debug(print_r($this->base_form_data_selector, TRUE));
-    //\Drupal::logger("DEBUG_ATTRIBUTES")->debug(print_r(array_keys($form["#attributes"]), TRUE));
-    //\Drupal::logger("DEBUG")->debug(print_r(array_keys($this->element), TRUE));
-    //\Drupal::logger("DEBUG")->debug(print_r($this->element["#title"], TRUE));
-    //\Drupal::logger("DEBUG_REQUIRED")->debug(print_r($this->element["#required"], TRUE));
-    //\Drupal::logger("DEBUG_DELTA")->debug(print_r($this->element["#delta"], TRUE));
-    //\Drupal::logger("DEBUG_WEIGHT")->debug(print_r($this->element["#weight"], TRUE));
+    //$this->element = $element;
+    //$this->delta = $element["#delta"];
+    //$this->weight = $element["#weight"];
 
     $element['role'] = [
       '#type' => 'select',
@@ -93,10 +84,10 @@ final class AgentWidget extends WidgetBase {
       '#title' => $this->t('Agent type'),
       '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedAgentTypeValues(),
       '#default_value' => $items[$delta]->agent_type ?? NULL,
-      '#ajax' => [
-        'callback' => [$this, 'conditionAgentType'],
-        'event' => 'change',
-      ],
+      //'#ajax' => [
+      //  'callback' => [$this, 'conditionAgentType'],
+      //  'event' => 'change',
+      //],
     ];
 
     $element['agent_tid'] = [
@@ -109,24 +100,52 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textfield',
       '#title' => $this->t('Name'),
       '#default_value' => $items[$delta]->name ?? NULL,
+      '#states' => [
+        'visible' => [
+          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+            ['value' => 'organisation'], 'or' , ['value' => 'person']
+          ],
+        ],
+      ],
     ];
 
     $element['orcid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ORCID'),
       '#default_value' => $items[$delta]->orcid ?? NULL,
+      '#states' => [
+        'visible' => [
+          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+            ['value' => 'person']
+          ],
+        ],
+      ],
     ];
 
     $element['first_names'] = [
       '#type' => 'textarea',
       '#title' => $this->t('First names'),
       '#default_value' => $items[$delta]->first_names ?? NULL,
+      '#states' => [
+        'visible' => [
+          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+            ['value' => 'person']
+          ],
+        ],
+      ],
     ];
 
     $element['last_names'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Last names'),
       '#default_value' => $items[$delta]->last_names ?? NULL,
+      '#states' => [
+        'visible' => [
+          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+            ['value' => 'person']
+          ],
+        ],
+      ],
     ];
 
     $element['ror'] = [
@@ -318,6 +337,9 @@ final class AgentWidget extends WidgetBase {
       if ($clean_values[$this->machine_name][$delta]["agent_type"] == "person") {
         //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$this->delta}-orcid]", "attr", ["disabled", "disabled"]));
         //$response->addCommand(new InvokeCommand("div input[data-drupal-selector=edit-field-creator-0-orcid]", "attr", ["style", "display: none;"]));
+        $form["field_creator"]["widget"][$delta]["orcid"]["#access"] = FALSE;
+        $form["field_creator"]["widget"][$delta]["orcid"]["#states"] = FALSE;
+        \Drupal::logger("DEBUG_ACCESS")->debug(print_r($form["field_creator"]["widget"][$delta]["orcid"]["#access"], TRUE));
 
         //$response->addCommand(new InvokeCommand("div.form-item--{$field_html_selector}-{$delta}-orcid", "attr", ["style", "display: none;"]));
         //$form[$this->machine_name][field_html_selector}-{$delta}-orcid", "attr", ["style", "display: none;"]));
