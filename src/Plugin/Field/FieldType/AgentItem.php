@@ -202,8 +202,8 @@ final class AgentItem extends FieldItemBase {
         'size' => 'big',
       ],
       'alternative_id' => [
-        'type' => 'varchar',
-        'length' => 255,
+        'type' => 'text',
+        'length' => 'big',
       ],
       'alternative_id_type' => [
         'type' => 'varchar',
@@ -290,12 +290,42 @@ final class AgentItem extends FieldItemBase {
   /**
    * Returns allowed values for 'role' sub-field.
    */
-  public static function allowedRoleValues(): array {
-    // @todo Update allowed values.
+  public static function allowedFieldRoleValues(): array {
     return [
-      'alpha' => t('Alpha'),
-      'beta' => t('Beta'),
-      'gamma' => t('Gamma'),
+      'Contributor' => t('Contributor'),
+      'Creator' => t('Creator'),
+      'Publisher' => t('Publisher'),
+    ];
+  }
+
+  /**
+   * Returns allowed values for 'role' sub-field.
+   */
+  public static function allowedRoleValues(): array {
+    return [
+      //'Contributor'           => t('Contributor'),
+      'ContactPerson'         => t('ContactPerson'),
+      'DataCollector'         => t('DataCollector'),
+      'DataCurator'           => t('DataCurator'),
+      'DataManager'           => t('DataManager'),
+      'Distributor'           => t('Distributor'),
+      'Editor'                => t('Editor'),
+      'HostingInstitution'    => t('HostingInstitution'),
+      'Producer'              => t('Producer'),
+      'ProjectLeader'         => t('ProjectLeader'),
+      'ProjectManager'        => t('ProjectManager'),
+      'ProjectMember'         => t('ProjectMember'),
+      'RegistrationAgency'    => t('RegistrationAgency'),
+      'RegistrationAuthority' => t('RegistrationAuthority'),
+      'RelatedPerson'         => t('RelatedPerson'),
+      'Researcher'            => t('Researcher'),
+      'ResearchGroup'         => t('ResearchGroup'),
+      'RightsHolder'          => t('RightsHolder'),
+      'Sponsor'               => t('Sponsor'),
+      'Supervisor'            => t('Supervisor'),
+      'Translator'            => t('Translator'),
+      'WorkPackageLeader'     => t('WorkPackageLeader'),
+      'Other'                 => t('Other'),
     ];
   }
 
@@ -305,9 +335,8 @@ final class AgentItem extends FieldItemBase {
   public static function allowedAgentTypeValues(): array {
     // @todo Update allowed values.
     return [
-      'alpha' => t('Alpha'),
-      'beta' => t('Beta'),
-      'gamma' => t('Gamma'),
+      'organisation' => t('Organisation'),
+      'person' => t('Person'),
     ];
   }
 
@@ -317,7 +346,7 @@ final class AgentItem extends FieldItemBase {
   public static function allowedAlternativeIDTypeValues(): array {
     // @todo Update allowed values.
     return [
-      'alpha' => t('Alpha'),
+      'viaf' => t('VIAF'),
       'beta' => t('Beta'),
       'gamma' => t('Gamma'),
     ];

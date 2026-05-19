@@ -9,6 +9,10 @@ use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\digitalia_muni_nfield_agent\Plugin\Field\FieldType\AgentItem;
 use Symfony\Component\Validator\ConstraintViolationInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Defines the 'dm_field_agent' field widget.
@@ -20,22 +24,27 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
  * )
  */
 final class AgentWidget extends WidgetBase {
+  protected $machine_name;
+  protected $element;
+  protected $delta;
+  protected $weight;
 
   /**
    * {@inheritdoc}
    */
   public static function defaultSettings(): array {
-    return ['foo' => 'bar'] + parent::defaultSettings();
+    return ['role' => 'Creator'] + parent::defaultSettings();
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state): array {
-    $element['foo'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Foo'),
-      '#default_value' => $this->getSetting('foo'),
+    $element['role'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Role'),
+      '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedFieldRoleValues(),
+      '#default_value' => $this->getSetting('role'),
     ];
     return $element;
   }
@@ -45,7 +54,7 @@ final class AgentWidget extends WidgetBase {
    */
   public function settingsSummary(): array {
     return [
-      $this->t('Foo: @foo', ['@foo' => $this->getSetting('foo')]),
+      $this->t('Role: @role', ['@role' => $this->getSetting('role')]),
     ];
   }
 
@@ -54,6 +63,20 @@ final class AgentWidget extends WidgetBase {
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
 
+    $this->machine_name = $items->getName();
+    $this->element = $element;
+    $this->delta = $element["#delta"];
+    $this->weight = $element["#weight"];
+
+    //\Drupal::logger("DEBUG")->debug(print_r($this->machine_name, TRUE));
+    //\Drupal::logger("DEBUG")->debug(print_r($this->base_form_data_selector, TRUE));
+    //\Drupal::logger("DEBUG_ATTRIBUTES")->debug(print_r(array_keys($form["#attributes"]), TRUE));
+    //\Drupal::logger("DEBUG")->debug(print_r(array_keys($this->element), TRUE));
+    //\Drupal::logger("DEBUG")->debug(print_r($this->element["#title"], TRUE));
+    //\Drupal::logger("DEBUG_REQUIRED")->debug(print_r($this->element["#required"], TRUE));
+    //\Drupal::logger("DEBUG_DELTA")->debug(print_r($this->element["#delta"], TRUE));
+    //\Drupal::logger("DEBUG_WEIGHT")->debug(print_r($this->element["#weight"], TRUE));
+
     $element['role'] = [
       '#type' => 'select',
       '#title' => $this->t('Role'),
@@ -61,11 +84,19 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->role ?? NULL,
     ];
 
+    if ($this->getSetting('role') != 'Contributor') {
+      $element['role']['#access'] = FALSE;
+    }
+
     $element['agent_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Agent type'),
       '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedAgentTypeValues(),
       '#default_value' => $items[$delta]->agent_type ?? NULL,
+      '#ajax' => [
+        'callback' => [$this, 'conditionAgentType'],
+        'event' => 'change',
+      ],
     ];
 
     $element['agent_tid'] = [
@@ -103,6 +134,7 @@ final class AgentWidget extends WidgetBase {
       '#title' => $this->t('ROR'),
       '#default_value' => $items[$delta]->ror ?? NULL,
     ];
+
 
     $element['institution_affiliation'] = [
       '#type' => 'textarea',
@@ -163,6 +195,13 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('Extra'),
       '#default_value' => $items[$delta]->extra ?? NULL,
+    ];
+
+    $element['debug'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'id' => ['debug-out'],
+      ],
     ];
 
     $element['#theme_wrappers'] = ['container', 'form_element'];
@@ -247,4 +286,46 @@ final class AgentWidget extends WidgetBase {
     return $values;
   }
 
+
+  public function conditionAgentType(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+  
+    $clean_values = $form_state->cleanValues()->getValues();
+    $field_html_selector = str_replace("_", "-", $this->machine_name);
+
+    \Drupal::logger("DEBUG_FORM")->debug(print_r(array_keys($form), TRUE));
+    \Drupal::logger("DEBUG_FORM_CURRENT_FIELD")->debug(print_r(array_keys($form[$this->machine_name]), TRUE));
+    \Drupal::logger("DEBUG_FORM_CURRENT_FIELD_TREE")->debug(serialize($form[$this->machine_name]));
+    \Drupal::logger("DEBUG")->debug(print_r(array_keys($this->element), TRUE));
+    //\Drupal::logger("DEBUG")->debug(print_r($this->element["#title"], TRUE));
+    \Drupal::logger("DEBUG_REQUIRED")->debug(print_r($this->element["#required"], TRUE));
+    \Drupal::logger("DEBUG_DELTA")->debug(print_r($this->element["#delta"], TRUE));
+    \Drupal::logger("DEBUG_WEIGHT")->debug(print_r($this->element["#weight"], TRUE));
+  
+    //dump($clean_values);
+    \Drupal::logger("DEBUG_CLEAN")->debug(print_r($clean_values, TRUE));
+
+    //\Drupal::logger("DEBUG_SELECTOR")->debug(print_r("[data-drupal-selector=edit-{$field_html_selector}-{$this->delta}-orcid]", TRUE));
+    //dump($form);
+
+    $debug_out = dump($form_state);
+    $response->addCommand(new ReplaceCommand('[data-drupal-selector=edit-field-contributor-0-debug', $debug_out));
+
+    //\Drupal::logger("DEBUG")->debug(print_r($clean_values[$this->machine_name]["{$this->delta}"]["agent_type"], TRUE));
+    \Drupal::logger("DEBUG")->debug(print_r($clean_values[$this->machine_name]["0"]["agent_type"], TRUE));
+
+    foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
+      if ($clean_values[$this->machine_name][$delta]["agent_type"] == "person") {
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$this->delta}-orcid]", "attr", ["disabled", "disabled"]));
+        //$response->addCommand(new InvokeCommand("div input[data-drupal-selector=edit-field-creator-0-orcid]", "attr", ["style", "display: none;"]));
+
+        //$response->addCommand(new InvokeCommand("div.form-item--{$field_html_selector}-{$delta}-orcid", "attr", ["style", "display: none;"]));
+        //$form[$this->machine_name][field_html_selector}-{$delta}-orcid", "attr", ["style", "display: none;"]));
+      } else {
+        //$response->addCommand(new InvokeCommand("div.form-item--{$field_html_selector}-{$delta}-orcid", "removeAttr", ["style"]));
+      }
+    }
+
+    return $response;
+  }
 }
