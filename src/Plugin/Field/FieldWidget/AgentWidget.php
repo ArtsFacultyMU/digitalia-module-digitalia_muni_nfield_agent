@@ -25,9 +25,6 @@ use Drupal\Core\Ajax\ReplaceCommand;
  */
 final class AgentWidget extends WidgetBase {
   protected $machine_name;
-  protected $element;
-  protected $delta;
-  protected $weight;
 
   /**
    * {@inheritdoc}
@@ -62,38 +59,48 @@ final class AgentWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
-
     $this->machine_name = $items->getName();
-    //$this->element = $element;
-    //$this->delta = $element["#delta"];
-    //$this->weight = $element["#weight"];
+    $this->machine_name_html = str_replace("_", "-", $this->machine_name);
 
     $element['role'] = [
       '#type' => 'select',
       '#title' => $this->t('Role'),
-      '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedRoleValues(),
+      '#options' => ['' => $this->t('- Select a value -')],
+      //'#default_value' => $items[$delta]->role ?? $this->getSetting('role'),
       '#default_value' => $items[$delta]->role ?? NULL,
     ];
 
-    if ($this->getSetting('role') != 'Contributor') {
-      $element['role']['#access'] = FALSE;
-    }
+    //if ($this->getSetting('role') == 'Contributor') {
+    //  $element['role']['#options'] += AgentItem::allowedRoleValuesContributor();
+    //}
+
+    //if ($this->getSetting('role') == 'Creator') {
+    //  $element['role']['#options'] += AgentItem::allowedRoleValuesCreator();
+    //  $element['role']['#access'] = FALSE;
+    //}
+    //if ($this->getSetting('role') == 'Publisher') {
+    //  $element['role']['#options'] += AgentItem::allowedRoleValuesPublisher();
+    //  $element['role']['#access'] = FALSE;
+    //}
 
     $element['agent_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Agent type'),
       '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedAgentTypeValues(),
       '#default_value' => $items[$delta]->agent_type ?? NULL,
-      //'#ajax' => [
-      //  'callback' => [$this, 'conditionAgentType'],
-      //  'event' => 'change',
-      //],
+      '#ajax' => [
+        'callback' => [$this, 'conditionAgentType'],
+        'event' => 'change',
+      ],
     ];
 
     $element['agent_tid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Agent TID'),
       '#default_value' => $items[$delta]->agent_tid ?? NULL,
+      '#states' => [
+        'invisible' => [],
+      ],
     ];
 
     $element['name'] = [
@@ -102,7 +109,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->name ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'organisation'], 'or' , ['value' => 'person']
           ],
         ],
@@ -115,21 +122,37 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->orcid ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
       ],
+      '#autocomplete_route_name' => 'digitalia_muni_autocomplete_remote_orcid.autocomplete',
+      '#ajax' => [
+        'callback' => [$this, 'populateFieldsORCID'],
+        'event' => 'autocompleteclose change'
+      ]
     ];
 
     $element['first_names'] = [
       '#type' => 'textarea',
       '#title' => $this->t('First names'),
       '#default_value' => $items[$delta]->first_names ?? NULL,
+      '#delta' => $delta,
       '#states' => [
         'visible' => [
-          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
+          ],
+        ],
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
           ],
         ],
       ],
@@ -141,8 +164,13 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->last_names ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[id=edit-field-creator-{$delta}-agent-type]" => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
+          ],
+        ],
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
           ],
         ],
       ],
@@ -152,6 +180,13 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textfield',
       '#title' => $this->t('ROR'),
       '#default_value' => $items[$delta]->ror ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
 
@@ -159,30 +194,65 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('Institution (Affiliation if person)'),
       '#default_value' => $items[$delta]->institution_affiliation ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['department_tid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Department TID'),
       '#default_value' => $items[$delta]->department_tid ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['department'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Department'),
       '#default_value' => $items[$delta]->department ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['contact'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Contact'),
       '#default_value' => $items[$delta]->contact ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['alternative_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Alternative ID'),
       '#default_value' => $items[$delta]->alternative_id ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['alternative_id_type'] = [
@@ -190,36 +260,64 @@ final class AgentWidget extends WidgetBase {
       '#title' => $this->t('Alternative ID type'),
       '#options' => ['' => $this->t('- None -')] + AgentItem::allowedAlternativeIDTypeValues(),
       '#default_value' => $items[$delta]->alternative_id_type ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['link'] = [
       '#type' => 'url',
       '#title' => $this->t('Link'),
       '#default_value' => $items[$delta]->link ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['note'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Note'),
       '#default_value' => $items[$delta]->note ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['private_note'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Private note'),
       '#default_value' => $items[$delta]->private_note ?? NULL,
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
+      ],
     ];
 
     $element['extra'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Extra'),
       '#default_value' => $items[$delta]->extra ?? NULL,
-    ];
-
-    $element['debug'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'id' => ['debug-out'],
+      '#states' => [
+        'invisible' => [
+          ":input[id=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => '']
+          ],
+        ],
       ],
     ];
 
@@ -306,32 +404,15 @@ final class AgentWidget extends WidgetBase {
   }
 
 
+  /**
+   * Obsolete, hiding done through #states in form.
+   */
   public function conditionAgentType(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
   
     $clean_values = $form_state->cleanValues()->getValues();
     $field_html_selector = str_replace("_", "-", $this->machine_name);
 
-    \Drupal::logger("DEBUG_FORM")->debug(print_r(array_keys($form), TRUE));
-    \Drupal::logger("DEBUG_FORM_CURRENT_FIELD")->debug(print_r(array_keys($form[$this->machine_name]), TRUE));
-    \Drupal::logger("DEBUG_FORM_CURRENT_FIELD_TREE")->debug(serialize($form[$this->machine_name]));
-    \Drupal::logger("DEBUG")->debug(print_r(array_keys($this->element), TRUE));
-    //\Drupal::logger("DEBUG")->debug(print_r($this->element["#title"], TRUE));
-    \Drupal::logger("DEBUG_REQUIRED")->debug(print_r($this->element["#required"], TRUE));
-    \Drupal::logger("DEBUG_DELTA")->debug(print_r($this->element["#delta"], TRUE));
-    \Drupal::logger("DEBUG_WEIGHT")->debug(print_r($this->element["#weight"], TRUE));
-  
-    //dump($clean_values);
-    \Drupal::logger("DEBUG_CLEAN")->debug(print_r($clean_values, TRUE));
-
-    //\Drupal::logger("DEBUG_SELECTOR")->debug(print_r("[data-drupal-selector=edit-{$field_html_selector}-{$this->delta}-orcid]", TRUE));
-    //dump($form);
-
-    $debug_out = dump($form_state);
-    $response->addCommand(new ReplaceCommand('[data-drupal-selector=edit-field-contributor-0-debug', $debug_out));
-
-    //\Drupal::logger("DEBUG")->debug(print_r($clean_values[$this->machine_name]["{$this->delta}"]["agent_type"], TRUE));
-    \Drupal::logger("DEBUG")->debug(print_r($clean_values[$this->machine_name]["0"]["agent_type"], TRUE));
 
     foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
       if ($clean_values[$this->machine_name][$delta]["agent_type"] == "person") {
@@ -350,4 +431,16 @@ final class AgentWidget extends WidgetBase {
 
     return $response;
   }
+
+  /**
+   * TODO, figure it out later, see above function for ajax commands.
+   */
+  public function populateFieldsORCID(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+
+    $first_names_html_selector = '';
+
+    return $response;
+  }
 }
+

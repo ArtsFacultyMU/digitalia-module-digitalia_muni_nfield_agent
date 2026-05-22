@@ -131,13 +131,13 @@ final class AgentItem extends FieldItemBase {
 
     $options['role']['AllowedValues'] = array_keys(AgentItem::allowedRoleValues());
 
-    $options['role']['NotBlank'] = [];
+    //$options['role']['NotBlank'] = [];
 
     $options['agent_type']['AllowedValues'] = array_keys(AgentItem::allowedAgentTypeValues());
 
-    $options['agent_type']['NotBlank'] = [];
+    //$options['agent_type']['NotBlank'] = [];
 
-    $options['name']['NotBlank'] = [];
+    //$options['name']['NotBlank'] = [];
 
     $options['alternative_id_type']['AllowedValues'] = array_keys(AgentItem::allowedAlternativeIDTypeValues());
 
@@ -301,9 +301,8 @@ final class AgentItem extends FieldItemBase {
   /**
    * Returns allowed values for 'role' sub-field.
    */
-  public static function allowedRoleValues(): array {
+  public static function allowedRoleValuesContributor(): array {
     return [
-      //'Contributor'           => t('Contributor'),
       'ContactPerson'         => t('ContactPerson'),
       'DataCollector'         => t('DataCollector'),
       'DataCurator'           => t('DataCurator'),
@@ -330,6 +329,57 @@ final class AgentItem extends FieldItemBase {
   }
 
   /**
+   * Returns allowed values for 'role' sub-field.
+   */
+  public static function allowedRoleValuesCreator(): array {
+    return [
+      'Creator'                 => t('Creator'),
+    ];
+  }
+
+  /**
+   * Returns allowed values for 'role' sub-field.
+   */
+  public static function allowedRoleValuesPublisher(): array {
+    return [
+      'Publisher'                 => t('Publisher'),
+    ];
+  }
+
+  /**
+   * Returns allowed values for 'role' sub-field.
+   */
+  public static function allowedRoleValues(): array {
+    return [
+      'Contributor'           => t('Contributor'),
+      'ContactPerson'         => t('ContactPerson'),
+      'DataCollector'         => t('DataCollector'),
+      'DataCurator'           => t('DataCurator'),
+      'DataManager'           => t('DataManager'),
+      'Distributor'           => t('Distributor'),
+      'Editor'                => t('Editor'),
+      'HostingInstitution'    => t('HostingInstitution'),
+      'Producer'              => t('Producer'),
+      'ProjectLeader'         => t('ProjectLeader'),
+      'ProjectManager'        => t('ProjectManager'),
+      'ProjectMember'         => t('ProjectMember'),
+      'RegistrationAgency'    => t('RegistrationAgency'),
+      'RegistrationAuthority' => t('RegistrationAuthority'),
+      'RelatedPerson'         => t('RelatedPerson'),
+      'Researcher'            => t('Researcher'),
+      'ResearchGroup'         => t('ResearchGroup'),
+      'RightsHolder'          => t('RightsHolder'),
+      'Sponsor'               => t('Sponsor'),
+      'Supervisor'            => t('Supervisor'),
+      'Translator'            => t('Translator'),
+      'WorkPackageLeader'     => t('WorkPackageLeader'),
+      'Other'                 => t('Other'),
+      'Creator'                 => t('Creator'),
+      'Publisher'                 => t('Publisher'),
+    ];
+  }
+
+  /**
    * Returns allowed values for 'agent_type' sub-field.
    */
   public static function allowedAgentTypeValues(): array {
@@ -347,8 +397,6 @@ final class AgentItem extends FieldItemBase {
     // @todo Update allowed values.
     return [
       'viaf' => t('VIAF'),
-      'beta' => t('Beta'),
-      'gamma' => t('Gamma'),
     ];
   }
 
