@@ -141,6 +141,10 @@ final class AgentItem extends FieldItemBase {
       $options['name']['NotBlank'] = [];
     }
 
+    if (!$this->isEmpty() && $this->getSetting('bar') === 'Contributor') {
+      $options['role']['NotBlank'] = [];
+    }
+
     $options['alternative_id_type']['AllowedValues'] = array_keys(AgentItem::allowedAlternativeIDTypeValues());
 
     $constraint_manager = \Drupal::typedDataManager()->getValidationConstraintManager();

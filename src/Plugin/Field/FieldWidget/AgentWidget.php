@@ -60,13 +60,12 @@ final class AgentWidget extends WidgetBase {
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
     $this->machine_name = $items->getName();
-    $this->machine_name_html = str_replace("_", "-", $this->machine_name);
+    $machine_name_html = str_replace("_", "-", $this->machine_name);
 
     $element['role'] = [
       '#type' => 'select',
       '#title' => $this->t('Role'),
       '#options' => ['' => $this->t('- Select a value -')],
-      //'#default_value' => $items[$delta]->role ?? $this->getSetting('role'),
       '#default_value' => $items[$delta]->role ?? NULL,
     ];
 
@@ -88,10 +87,6 @@ final class AgentWidget extends WidgetBase {
       '#title' => $this->t('Agent type'),
       '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedAgentTypeValues(),
       '#default_value' => $items[$delta]->agent_type ?? NULL,
-      '#ajax' => [
-        'callback' => [$this, 'conditionAgentType'],
-        'event' => 'change',
-      ],
     ];
 
     $element['agent_tid'] = [
@@ -100,7 +95,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->agent_tid ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'NEVER'],
           ],
         ],
@@ -113,7 +108,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->name ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'organisation'], 'or' , ['value' => 'person']
           ],
         ],
@@ -127,7 +122,7 @@ final class AgentWidget extends WidgetBase {
       '#maxlength' => 1024,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
@@ -146,7 +141,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
@@ -160,7 +155,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
@@ -174,7 +169,7 @@ final class AgentWidget extends WidgetBase {
       '#maxlength' => 8192,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -194,7 +189,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -207,7 +202,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->department_tid ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'NEVER'],
           ],
         ],
@@ -221,7 +216,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -234,7 +229,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->contact ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -248,7 +243,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->alternative_id_type ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -262,21 +257,21 @@ final class AgentWidget extends WidgetBase {
       '#states' => [
         'visible' => [
           [
-            ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+            ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
               ['value' => 'person'], 'or', ['value' => 'organisation'],
               
             ],
           ],
           'and',
           [
-            ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-alternative-id-type]" => [
+            ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-alternative-id-type]" => [
               ['value' => ''],
             ],
           ],
         ],
         'invisible' => [
           [
-            ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-alternative-id-type]" => [
+            ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-alternative-id-type]" => [
               ['value' => ''],
             ],
           ],
@@ -290,7 +285,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->link ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -303,7 +298,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->note ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -316,7 +311,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->private_note ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -329,7 +324,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->extra ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$this->machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'NEVER'],
           ],
         ],
@@ -419,42 +414,16 @@ final class AgentWidget extends WidgetBase {
   }
 
 
-  /**
-   * Obsolete, hiding done through #states in form.
-   */
-  public function conditionAgentType(array &$form, FormStateInterface $form_state) {
-    $response = new AjaxResponse();
-  
-    $clean_values = $form_state->cleanValues()->getValues();
-    $field_html_selector = str_replace("_", "-", $this->machine_name);
-
-
-    foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
-      if ($clean_values[$this->machine_name][$delta]["agent_type"] == "person") {
-        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$this->delta}-orcid]", "attr", ["disabled", "disabled"]));
-        //$response->addCommand(new InvokeCommand("div input[data-drupal-selector=edit-field-creator-0-orcid]", "attr", ["style", "display: none;"]));
-        $form["field_creator"]["widget"][$delta]["orcid"]["#access"] = FALSE;
-        $form["field_creator"]["widget"][$delta]["orcid"]["#states"] = FALSE;
-        \Drupal::logger("DEBUG_ACCESS")->debug(print_r($form["field_creator"]["widget"][$delta]["orcid"]["#access"], TRUE));
-
-        //$response->addCommand(new InvokeCommand("div.form-item--{$field_html_selector}-{$delta}-orcid", "attr", ["style", "display: none;"]));
-        //$form[$this->machine_name][field_html_selector}-{$delta}-orcid", "attr", ["style", "display: none;"]));
-      } else {
-        //$response->addCommand(new InvokeCommand("div.form-item--{$field_html_selector}-{$delta}-orcid", "removeAttr", ["style"]));
-      }
-    }
-
-    return $response;
-  }
-
-  /**
-   * TODO, figure it out later, see above function for ajax commands.
-   */
   public function populateFieldsORCID(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
     $clean_values = $form_state->cleanValues()->getValues();
     $field_html_selector = str_replace("_", "-", $this->machine_name);
+
+    // TODO: this is a workaround for setting default value (for publisher)
+    if (!array_key_exists($this->machine_name, $clean_values)) {
+      return $response;
+    }
 
     foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
       $decoded = json_decode($clean_values[$this->machine_name][$delta]['orcid'], TRUE);
@@ -476,14 +445,16 @@ final class AgentWidget extends WidgetBase {
     return $response;
   }
 
-  /**
-   * TODO, figure it out later, see above function for ajax commands.
-   */
   public function populateFieldsROR(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
     $clean_values = $form_state->cleanValues()->getValues();
     $field_html_selector = str_replace("_", "-", $this->machine_name);
+
+    // TODO: this is a workaround for setting default value (for publisher)
+    if (!array_key_exists($this->machine_name, $clean_values)) {
+      return $response;
+    }
 
     foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
       $decoded = json_decode($clean_values[$this->machine_name][$delta]['ror'], TRUE);
