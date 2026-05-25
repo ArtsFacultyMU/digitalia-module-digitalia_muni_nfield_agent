@@ -73,9 +73,10 @@ final class AgentItem extends FieldItemBase {
 
   /**
    * {@inheritdoc}
+   * The magic method of getting value ($this->VARIABLE_NAME) falls apart when the class already has a variable with the same name (looking at you, name).
    */
   public function isEmpty(): bool {
-    return $this->role === NULL && $this->agent_type === NULL && $this->agent_tid === NULL && $this->name === NULL && $this->orcid === NULL && $this->first_names === NULL && $this->last_names === NULL && $this->ror === NULL && $this->institution_affiliation === NULL && $this->department_tid === NULL && $this->department === NULL && $this->contact === NULL && $this->alternative_id === NULL && $this->alternative_id_type === NULL && $this->link === NULL && $this->note === NULL && $this->private_note === NULL && $this->extra === NULL;
+    return $this->get('role')->getValue() == NULL && $this->get('agent_type')->getValue() == NULL && $this->get('agent_tid')->getValue() == NULL && $this->get('name')->getValue() == NULL && $this->get('orcid')->getValue() == NULL && $this->get('first_names')->getValue() == NULL && $this->get('last_names')->getValue() == NULL && $this->get('ror')->getValue() == NULL && $this->get('institution_affiliation')->getValue() == NULL && $this->get('department_tid')->getValue() == NULL && $this->get('department')->getValue() == NULL && $this->get('contact')->getValue() == NULL && $this->get('alternative_id')->getValue() == NULL && $this->get('alternative_id_type')->getValue() == NULL && $this->get('link')->getValue() == NULL && $this->get('note')->getValue() == NULL && $this->get('private_note')->getValue() == NULL && $this->get('extra')->getValue() == NULL;
   }
 
   /**
@@ -131,13 +132,14 @@ final class AgentItem extends FieldItemBase {
 
     $options['role']['AllowedValues'] = array_keys(AgentItem::allowedRoleValues());
 
-    //$options['role']['NotBlank'] = [];
 
     $options['agent_type']['AllowedValues'] = array_keys(AgentItem::allowedAgentTypeValues());
 
-    //$options['agent_type']['NotBlank'] = [];
-
-    //$options['name']['NotBlank'] = [];
+    if (!$this->isEmpty()) {
+      //$options['role']['NotBlank'] = [];
+      $options['agent_type']['NotBlank'] = [];
+      $options['name']['NotBlank'] = [];
+    }
 
     $options['alternative_id_type']['AllowedValues'] = array_keys(AgentItem::allowedAlternativeIDTypeValues());
 
@@ -299,7 +301,7 @@ final class AgentItem extends FieldItemBase {
   }
 
   /**
-   * Returns allowed values for 'role' sub-field.
+   * Returns allowed values for 'Contributor' 'role' sub-field.
    */
   public static function allowedRoleValuesContributor(): array {
     return [
@@ -329,7 +331,7 @@ final class AgentItem extends FieldItemBase {
   }
 
   /**
-   * Returns allowed values for 'role' sub-field.
+   * Returns allowed values for 'Creator' 'role' sub-field.
    */
   public static function allowedRoleValuesCreator(): array {
     return [
@@ -338,7 +340,7 @@ final class AgentItem extends FieldItemBase {
   }
 
   /**
-   * Returns allowed values for 'role' sub-field.
+   * Returns allowed values for 'Publisher' 'role' sub-field.
    */
   public static function allowedRoleValuesPublisher(): array {
     return [
@@ -374,8 +376,8 @@ final class AgentItem extends FieldItemBase {
       'Translator'            => t('Translator'),
       'WorkPackageLeader'     => t('WorkPackageLeader'),
       'Other'                 => t('Other'),
-      'Creator'                 => t('Creator'),
-      'Publisher'                 => t('Publisher'),
+      'Creator'               => t('Creator'),
+      'Publisher'             => t('Publisher'),
     ];
   }
 
@@ -397,6 +399,7 @@ final class AgentItem extends FieldItemBase {
     // @todo Update allowed values.
     return [
       'viaf' => t('VIAF'),
+      'other' => t('Other'),
     ];
   }
 
