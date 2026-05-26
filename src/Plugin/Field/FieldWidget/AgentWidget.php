@@ -30,29 +30,31 @@ final class AgentWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public static function defaultSettings(): array {
-    return ['role' => 'Creator'] + parent::defaultSettings();
+    //return ['role' => 'Creator'] + parent::defaultSettings();
+    return parent::defaultSettings();
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state): array {
-    $element['role'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Role'),
-      '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedFieldRoleValues(),
-      '#default_value' => $this->getSetting('role'),
-    ];
-    return $element;
+    //$element['role'] = [
+    //  '#type' => 'select',
+    //  '#title' => $this->t('Role'),
+    //  '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedFieldRoleValues(),
+    //  '#default_value' => $this->getSetting('role'),
+    //];
+    //return $element;
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsSummary(): array {
-    return [
-      $this->t('Role: @role', ['@role' => $this->getSetting('role')]),
-    ];
+    return array();
+    //return [
+    //  $this->t('Role: @role', ['@role' => $this->getSetting('role')]),
+    //];
   }
 
   /**
@@ -69,15 +71,15 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->role ?? NULL,
     ];
 
-    if ($this->getSetting('role') == 'Contributor') {
+    if ($this->getFieldSetting('role') == 'Contributor') {
       $element['role']['#options'] += AgentItem::allowedRoleValuesContributor();
     }
 
-    if ($this->getSetting('role') == 'Creator') {
+    if ($this->getFieldSetting('role') == 'Creator') {
       $element['role']['#options'] += AgentItem::allowedRoleValuesCreator();
       $element['role']['#access'] = FALSE;
     }
-    if ($this->getSetting('role') == 'Publisher') {
+    if ($this->getFieldSetting('role') == 'Publisher') {
       $element['role']['#options'] += AgentItem::allowedRoleValuesPublisher();
       $element['role']['#access'] = FALSE;
     }
@@ -87,6 +89,10 @@ final class AgentWidget extends WidgetBase {
       '#title' => $this->t('Agent type'),
       '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedAgentTypeValues(),
       '#default_value' => $items[$delta]->agent_type ?? NULL,
+      '#ajax' => [
+        'callback' => [$this, 'updateInstitutionAffiliationTitle'],
+        'event' => 'change'
+      ]
     ];
 
     $element['agent_tid'] = [
@@ -195,6 +201,13 @@ final class AgentWidget extends WidgetBase {
         ],
       ],
     ];
+
+    if ($element['agent_type']['#default_value'] === 'person') {
+      $element['institution_affiliation']['#title'] = 'Affiliation';
+    }
+    if ($element['agent_type']['#default_value'] === 'organisation') {
+      $element['institution_affiliation']['#title'] = 'Institution';
+    }
 
     $element['department_tid'] = [
       '#type' => 'textfield',
@@ -413,6 +426,28 @@ final class AgentWidget extends WidgetBase {
     return $values;
   }
 
+  public function updateInstitutionAffiliationTitle(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+
+    $clean_values = $form_state->cleanValues()->getValues();
+    $field_html_selector = str_replace("_", "-", $this->machine_name);
+
+    $title = "";
+    foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
+      if ($clean_values[$this->machine_name][$delta]["agent_type"] == "person") {
+        $title = "Affiliation";
+      }
+      if ($clean_values[$this->machine_name][$delta]["agent_type"] == "organisation") {
+        $title = "Institution";
+      }
+
+      //$test = "[for=edit-{$field_html_selector}-{$delta}-institution-affiliation]";
+
+      $response->addCommand(new InvokeCommand("[for|=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "text", [$title]));
+    }
+
+    return $response;
+  }
 
   public function populateFieldsORCID(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
@@ -430,15 +465,15 @@ final class AgentWidget extends WidgetBase {
       $full_name = $decoded["given-names"] . " " . $decoded["family-names"];
       if ($decoded) {
         $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "val", [$decoded["given-names"]]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "attr", ["readonly", "readonly"]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "attr", ["readonly", "readonly"]));
         $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "val", [$decoded["family-names"]]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "attr", ["readonly", "readonly"]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "attr", ["readonly", "readonly"]));
         $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-orcid]", "val", [$decoded["orcid-id"]]));
 
         $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-name]", "val", [$full_name]));
       } else {
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "removeAttr", ["readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "removeAttr", ["readonly"]));
+       // $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "removeAttr", ["readonly"]));
+       // $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "removeAttr", ["readonly"]));
       }
     }
 
@@ -469,10 +504,10 @@ final class AgentWidget extends WidgetBase {
 
       if ($decoded) {
         $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "val", [$display_name]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
         $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-ror]", "val", [$decoded["id"]]));
       } else {
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "removeAttr", ["readonly"]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "removeAttr", ["readonly"]));
 
       }
     }

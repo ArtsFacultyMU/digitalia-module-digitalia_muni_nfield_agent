@@ -1,20 +1,20 @@
-# Field storage.
-field.storage_settings.dm_field_agent:
-  type: mapping
-  label: Example storage settings
-  mapping:
-    foo:
-      type: string
-      label: Foo
+## Field storage.
+#field.storage_settings.dm_field_agent:
+#  type: mapping
+#  label: Example storage settings
+#  mapping:
+#    foo:
+#      type: string
+#      label: Foo
 
 # Field instance.
 field.field_settings.dm_field_agent:
   type: mapping
   label: Example field settings
   mapping:
-    bar:
+    role:
       type: string
-      label: Bar
+      label: Role
 
 # Default value.
 field.value.dm_field_agent:

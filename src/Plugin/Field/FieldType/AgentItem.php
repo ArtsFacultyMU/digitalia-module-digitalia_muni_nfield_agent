@@ -24,35 +24,36 @@ use Drupal\Core\TypedData\DataDefinition;
  */
 final class AgentItem extends FieldItemBase {
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function defaultStorageSettings(): array {
-    $settings = ['foo' => 'example'];
-    return $settings + parent::defaultStorageSettings();
-  }
+  ///**
+  // * {@inheritdoc}
+  // */
+  //public static function defaultStorageSettings(): array {
+  //  $settings = ['foo' => 'example'];
+  //  return $settings + parent::defaultStorageSettings();
+  //}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
-    $settings = $this->getSettings();
+  ///**
+  // * {@inheritdoc}
+  // */
+  //public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
+  //  $settings = $this->getSettings();
 
-    $element['foo'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Foo'),
-      '#default_value' => $settings['foo'],
-      '#disabled' => $has_data,
-    ];
+  //  $element['foo'] = [
+  //    '#type' => 'textfield',
+  //    '#title' => $this->t('Foo'),
+  //    '#default_value' => $settings['foo'],
+  //    '#disabled' => $has_data,
+  //  ];
 
-    return $element;
-  }
+  //  return $element;
+  //}
 
   /**
    * {@inheritdoc}
    */
   public static function defaultFieldSettings(): array {
-    $settings = ['bar' => 'example'];
+    //$settings = ['bar' => 'example'];
+    $settings = ['role' => 'Role'];
     return $settings + parent::defaultFieldSettings();
   }
 
@@ -62,10 +63,17 @@ final class AgentItem extends FieldItemBase {
   public function fieldSettingsForm(array $form, FormStateInterface $form_state): array {
     $settings = $this->getSettings();
 
-    $element['bar'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Bar'),
-      '#default_value' => $settings['bar'],
+    //$element['bar'] = [
+    //  '#type' => 'textfield',
+    //  '#title' => $this->t('Bar'),
+    //  '#default_value' => $settings['bar'],
+    //];
+
+    $element['role'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Role'),
+      '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedRoleValues(),
+      '#default_value' => $settings['role'],
     ];
 
     return $element;
@@ -358,28 +366,6 @@ final class AgentItem extends FieldItemBase {
   public static function allowedRoleValues(): array {
     return [
       'Contributor'           => t('Contributor'),
-      'ContactPerson'         => t('ContactPerson'),
-      'DataCollector'         => t('DataCollector'),
-      'DataCurator'           => t('DataCurator'),
-      'DataManager'           => t('DataManager'),
-      'Distributor'           => t('Distributor'),
-      'Editor'                => t('Editor'),
-      'HostingInstitution'    => t('HostingInstitution'),
-      'Producer'              => t('Producer'),
-      'ProjectLeader'         => t('ProjectLeader'),
-      'ProjectManager'        => t('ProjectManager'),
-      'ProjectMember'         => t('ProjectMember'),
-      'RegistrationAgency'    => t('RegistrationAgency'),
-      'RegistrationAuthority' => t('RegistrationAuthority'),
-      'RelatedPerson'         => t('RelatedPerson'),
-      'Researcher'            => t('Researcher'),
-      'ResearchGroup'         => t('ResearchGroup'),
-      'RightsHolder'          => t('RightsHolder'),
-      'Sponsor'               => t('Sponsor'),
-      'Supervisor'            => t('Supervisor'),
-      'Translator'            => t('Translator'),
-      'WorkPackageLeader'     => t('WorkPackageLeader'),
-      'Other'                 => t('Other'),
       'Creator'               => t('Creator'),
       'Publisher'             => t('Publisher'),
     ];
