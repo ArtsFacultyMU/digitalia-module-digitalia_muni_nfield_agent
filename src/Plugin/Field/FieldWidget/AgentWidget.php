@@ -45,6 +45,7 @@ final class AgentWidget extends WidgetBase {
     //  '#default_value' => $this->getSetting('role'),
     //];
     //return $element;
+    return array();
   }
 
   /**
@@ -70,19 +71,6 @@ final class AgentWidget extends WidgetBase {
       '#options' => ['' => $this->t('- Select a value -')],
       '#default_value' => $items[$delta]->role ?? NULL,
     ];
-
-    if ($this->getFieldSetting('role') == 'Contributor') {
-      $element['role']['#options'] += AgentItem::allowedRoleValuesContributor();
-    }
-
-    if ($this->getFieldSetting('role') == 'Creator') {
-      $element['role']['#options'] += AgentItem::allowedRoleValuesCreator();
-      $element['role']['#access'] = FALSE;
-    }
-    if ($this->getFieldSetting('role') == 'Publisher') {
-      $element['role']['#options'] += AgentItem::allowedRoleValuesPublisher();
-      $element['role']['#access'] = FALSE;
-    }
 
     $element['agent_type'] = [
       '#type' => 'select',
@@ -343,6 +331,20 @@ final class AgentWidget extends WidgetBase {
         ],
       ],
     ];
+
+    if ($this->getFieldSetting('role') == 'Contributor') {
+      $element['role']['#options'] += AgentItem::allowedRoleValuesContributor();
+    }
+
+    if ($this->getFieldSetting('role') == 'Creator') {
+      $element['role']['#options'] += AgentItem::allowedRoleValuesCreator();
+      $element['role']['#access'] = FALSE;
+    }
+    if ($this->getFieldSetting('role') == 'Publisher') {
+      $element['role']['#options'] += AgentItem::allowedRoleValuesPublisher();
+      $element['role']['#access'] = FALSE;
+    }
+
 
     $element['#theme_wrappers'] = ['container', 'form_element'];
     $element['#attributes']['class'][] = 'dm-field-agent-elements';

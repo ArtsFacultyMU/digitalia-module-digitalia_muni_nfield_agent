@@ -33,7 +33,7 @@ final class AgentKeyValueFormatter extends FormatterBase {
 
       // Role.
       if ($item->role) {
-        $allowed_values = AgentItem::allowedRoleValues();
+        $allowed_values = array_merge(AgentItem::allowedRoleValues(), AgentItem::allowedRoleValuesContributor());
 
         $table['#rows'][] = [
           'data' => [

@@ -138,7 +138,7 @@ final class AgentItem extends FieldItemBase {
   public function getConstraints(): array {
     $constraints = parent::getConstraints();
 
-    $options['role']['AllowedValues'] = array_keys(AgentItem::allowedRoleValues());
+    $options['role']['AllowedValues'] = array_keys(array_merge(AgentItem::allowedRoleValuesContributor(), AgentItem::allowedRoleValues()));
 
 
     $options['agent_type']['AllowedValues'] = array_keys(AgentItem::allowedAgentTypeValues());
@@ -149,7 +149,7 @@ final class AgentItem extends FieldItemBase {
       $options['name']['NotBlank'] = [];
     }
 
-    if (!$this->isEmpty() && $this->getSetting('bar') === 'Contributor') {
+    if (!$this->isEmpty() && $this->getSetting('role') === 'Contributor') {
       $options['role']['NotBlank'] = [];
     }
 
@@ -317,27 +317,27 @@ final class AgentItem extends FieldItemBase {
    */
   public static function allowedRoleValuesContributor(): array {
     return [
-      'ContactPerson'         => t('ContactPerson'),
-      'DataCollector'         => t('DataCollector'),
-      'DataCurator'           => t('DataCurator'),
-      'DataManager'           => t('DataManager'),
+      'ContactPerson'         => t('Contact Person'),
+      'DataCollector'         => t('Data Collector'),
+      'DataCurator'           => t('Data Curator'),
+      'DataManager'           => t('Data Manager'),
       'Distributor'           => t('Distributor'),
       'Editor'                => t('Editor'),
-      'HostingInstitution'    => t('HostingInstitution'),
+      'HostingInstitution'    => t('Hosting Institution'),
       'Producer'              => t('Producer'),
-      'ProjectLeader'         => t('ProjectLeader'),
-      'ProjectManager'        => t('ProjectManager'),
-      'ProjectMember'         => t('ProjectMember'),
-      'RegistrationAgency'    => t('RegistrationAgency'),
-      'RegistrationAuthority' => t('RegistrationAuthority'),
-      'RelatedPerson'         => t('RelatedPerson'),
+      'ProjectLeader'         => t('Project Leader'),
+      'ProjectManager'        => t('Project Manager'),
+      'ProjectMember'         => t('Project Member'),
+      'RegistrationAgency'    => t('Registration Agency'),
+      'RegistrationAuthority' => t('Registration Authority'),
+      'RelatedPerson'         => t('Related Person'),
       'Researcher'            => t('Researcher'),
-      'ResearchGroup'         => t('ResearchGroup'),
-      'RightsHolder'          => t('RightsHolder'),
+      'ResearchGroup'         => t('Research Group'),
+      'RightsHolder'          => t('Rights Holder'),
       'Sponsor'               => t('Sponsor'),
       'Supervisor'            => t('Supervisor'),
       'Translator'            => t('Translator'),
-      'WorkPackageLeader'     => t('WorkPackageLeader'),
+      'WorkPackageLeader'     => t('Work Package Leader'),
       'Other'                 => t('Other'),
     ];
   }
@@ -347,7 +347,7 @@ final class AgentItem extends FieldItemBase {
    */
   public static function allowedRoleValuesCreator(): array {
     return [
-      'Creator'                 => t('Creator'),
+      'Creator'               => t('Creator'),
     ];
   }
 
@@ -356,7 +356,7 @@ final class AgentItem extends FieldItemBase {
    */
   public static function allowedRoleValuesPublisher(): array {
     return [
-      'Publisher'                 => t('Publisher'),
+      'Publisher'             => t('Publisher'),
     ];
   }
 
