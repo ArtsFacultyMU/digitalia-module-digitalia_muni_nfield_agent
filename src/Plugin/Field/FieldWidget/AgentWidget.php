@@ -97,19 +97,6 @@ final class AgentWidget extends WidgetBase {
       ],
     ];
 
-    $element['name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Name'),
-      '#default_value' => $items[$delta]->name ?? NULL,
-      '#states' => [
-        'visible' => [
-          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
-            ['value' => 'organisation'], 'or' , ['value' => 'person']
-          ],
-        ],
-      ],
-    ];
-
     $element['orcid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ORCID'),
@@ -128,6 +115,39 @@ final class AgentWidget extends WidgetBase {
         'event' => 'autocompleteclose change'
       ]
     ];
+
+    $element['ror'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('ROR'),
+      '#default_value' => $items[$delta]->ror ?? NULL,
+      '#maxlength' => 8192,
+      '#states' => [
+        'visible' => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => 'person'], 'or', ['value' => 'organisation']
+          ],
+        ],
+      ],
+      '#autocomplete_route_name' => 'digitalia_muni_autocomplete_remote_ror.autocomplete',
+      '#ajax' => [
+        'callback' => [$this, 'populateFieldsROR'],
+        'event' => 'autocompleteclose change'
+      ]
+    ];
+
+    $element['name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Name'),
+      '#default_value' => $items[$delta]->name ?? NULL,
+      '#states' => [
+        'visible' => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
+            ['value' => 'organisation'], 'or' , ['value' => 'person']
+          ],
+        ],
+      ],
+    ];
+
 
     $element['first_names'] = [
       '#type' => 'textarea',
@@ -155,25 +175,6 @@ final class AgentWidget extends WidgetBase {
           ],
         ],
       ],
-    ];
-
-    $element['ror'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('ROR'),
-      '#default_value' => $items[$delta]->ror ?? NULL,
-      '#maxlength' => 8192,
-      '#states' => [
-        'visible' => [
-          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
-            ['value' => 'person'], 'or', ['value' => 'organisation']
-          ],
-        ],
-      ],
-      '#autocomplete_route_name' => 'digitalia_muni_autocomplete_remote_ror.autocomplete',
-      '#ajax' => [
-        'callback' => [$this, 'populateFieldsROR'],
-        'event' => 'autocompleteclose change'
-      ]
     ];
 
 
@@ -503,8 +504,15 @@ final class AgentWidget extends WidgetBase {
     $subarray = array();
     $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
+
     foreach (array_keys($subarray[$this->machine_name]) as $delta) {
       $decoded = json_decode($subarray[$this->machine_name][$delta]['ror'], TRUE);
+
+      $prefill_field = 'institution-affiliation';
+      if ($subarray[$this->machine_name][$delta]['agent_type'] === 'organisation') {
+        $prefill_field = 'name';
+      }
+
 
       $display_name = "";
       foreach ($decoded["names"]  as $name) {
@@ -515,7 +523,7 @@ final class AgentWidget extends WidgetBase {
       }
 
       if ($decoded) {
-        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "val", [$display_name]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-{$prefill_field}]", "val", [$display_name]));
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
         $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-ror]", "val", [$decoded["id"]]));
       } else {
