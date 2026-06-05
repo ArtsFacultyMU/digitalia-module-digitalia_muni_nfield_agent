@@ -65,6 +65,7 @@ final class AgentWidget extends WidgetBase {
     $this->machine_name = $items->getName();
     $machine_name_html = str_replace("_", "-", $this->machine_name);
 
+    // states: default value form and bulk edit form have different drupal-data-selector prefix :(
     $element['role'] = [
       '#type' => 'select',
       '#title' => $this->t('Role'),
@@ -89,7 +90,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->agent_tid ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'NEVER'],
           ],
         ],
@@ -102,7 +103,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->name ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'organisation'], 'or' , ['value' => 'person']
           ],
         ],
@@ -116,7 +117,7 @@ final class AgentWidget extends WidgetBase {
       '#maxlength' => 1024,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
@@ -135,7 +136,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
@@ -149,7 +150,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person']
           ],
         ],
@@ -163,7 +164,7 @@ final class AgentWidget extends WidgetBase {
       '#maxlength' => 8192,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -183,7 +184,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -203,7 +204,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->department_tid ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'NEVER'],
           ],
         ],
@@ -217,7 +218,7 @@ final class AgentWidget extends WidgetBase {
       '#rows' => 2,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -230,7 +231,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->contact ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -244,7 +245,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->alternative_id_type ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -258,21 +259,21 @@ final class AgentWidget extends WidgetBase {
       '#states' => [
         'visible' => [
           [
-            ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+            ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
               ['value' => 'person'], 'or', ['value' => 'organisation'],
               
             ],
           ],
           'and',
           [
-            ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-alternative-id-type]" => [
+            ":input[data-drupal-selector$={$machine_name_html}-{$delta}-alternative-id-type]" => [
               ['value' => ''],
             ],
           ],
         ],
         'invisible' => [
           [
-            ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-alternative-id-type]" => [
+            ":input[data-drupal-selector$={$machine_name_html}-{$delta}-alternative-id-type]" => [
               ['value' => ''],
             ],
           ],
@@ -286,7 +287,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->link ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -299,7 +300,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->note ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -312,7 +313,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->private_note ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'person'], 'or', ['value' => 'organisation']
           ],
         ],
@@ -325,7 +326,7 @@ final class AgentWidget extends WidgetBase {
       '#default_value' => $items[$delta]->extra ?? NULL,
       '#states' => [
         'visible' => [
-          ":input[data-drupal-selector=edit-{$machine_name_html}-{$delta}-agent-type]" => [
+          ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
             ['value' => 'NEVER'],
           ],
         ],
@@ -428,24 +429,39 @@ final class AgentWidget extends WidgetBase {
     return $values;
   }
 
+  protected function findKeyInArray(string $needle, array $array, array &$ret) {
+    if (array_key_exists($needle, $array)) {
+      $ret = $array;
+      return;
+    }
+
+    foreach ($array as $key => $value) {
+      if (is_array($value)) {
+        $this->findKeyInArray($needle, $value, $ret);
+      }
+    }
+  }
+
   public function updateInstitutionAffiliationTitle(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
     $clean_values = $form_state->cleanValues()->getValues();
     $field_html_selector = str_replace("_", "-", $this->machine_name);
+    $subarray = array();
+    $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
     $title = "";
-    foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
-      if ($clean_values[$this->machine_name][$delta]["agent_type"] == "person") {
+    foreach (array_keys($subarray[$this->machine_name]) as $delta) {
+      if ($subarray[$this->machine_name][$delta]["agent_type"] == "person") {
         $title = "Affiliation";
       }
-      if ($clean_values[$this->machine_name][$delta]["agent_type"] == "organisation") {
+      if ($subarray[$this->machine_name][$delta]["agent_type"] == "organisation") {
         $title = "Institution";
       }
 
       //$test = "[for=edit-{$field_html_selector}-{$delta}-institution-affiliation]";
 
-      $response->addCommand(new InvokeCommand("[for|=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "text", [$title]));
+      $response->addCommand(new InvokeCommand("[for$={$field_html_selector}-{$delta}-institution-affiliation]", "text", [$title]));
     }
 
     return $response;
@@ -456,26 +472,23 @@ final class AgentWidget extends WidgetBase {
 
     $clean_values = $form_state->cleanValues()->getValues();
     $field_html_selector = str_replace("_", "-", $this->machine_name);
+    $subarray = array();
+    $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
-    // TODO: this is a workaround for setting default value (for publisher)
-    if (!array_key_exists($this->machine_name, $clean_values)) {
-      return $response;
-    }
-
-    foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
-      $decoded = json_decode($clean_values[$this->machine_name][$delta]['orcid'], TRUE);
+    foreach (array_keys($subarray[$this->machine_name]) as $delta) {
+      $decoded = json_decode($subarray[$this->machine_name][$delta]['orcid'], TRUE);
       $full_name = $decoded["given-names"] . " " . $decoded["family-names"];
       if ($decoded) {
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "val", [$decoded["given-names"]]));
-        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "val", [$decoded["family-names"]]));
-        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-orcid]", "val", [$decoded["orcid-id"]]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-first-names]", "val", [$decoded["given-names"]]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-first-names]", "attr", ["readonly", "readonly"]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-last-names]", "val", [$decoded["family-names"]]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-last-names]", "attr", ["readonly", "readonly"]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-orcid]", "val", [$decoded["orcid-id"]]));
 
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-name]", "val", [$full_name]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-name]", "val", [$full_name]));
       } else {
-       // $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-last-names]", "removeAttr", ["readonly"]));
-       // $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-first-names]", "removeAttr", ["readonly"]));
+       // $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-last-names]", "removeAttr", ["readonly"]));
+       // $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-first-names]", "removeAttr", ["readonly"]));
       }
     }
 
@@ -487,14 +500,11 @@ final class AgentWidget extends WidgetBase {
 
     $clean_values = $form_state->cleanValues()->getValues();
     $field_html_selector = str_replace("_", "-", $this->machine_name);
+    $subarray = array();
+    $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
-    // TODO: this is a workaround for setting default value (for publisher)
-    if (!array_key_exists($this->machine_name, $clean_values)) {
-      return $response;
-    }
-
-    foreach (array_keys($clean_values[$this->machine_name]) as $delta) {
-      $decoded = json_decode($clean_values[$this->machine_name][$delta]['ror'], TRUE);
+    foreach (array_keys($subarray[$this->machine_name]) as $delta) {
+      $decoded = json_decode($subarray[$this->machine_name][$delta]['ror'], TRUE);
 
       $display_name = "";
       foreach ($decoded["names"]  as $name) {
@@ -505,11 +515,11 @@ final class AgentWidget extends WidgetBase {
       }
 
       if ($decoded) {
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "val", [$display_name]));
-        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-ror]", "val", [$decoded["id"]]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "val", [$display_name]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-ror]", "val", [$decoded["id"]]));
       } else {
-        //$response->addCommand(new InvokeCommand("[data-drupal-selector=edit-{$field_html_selector}-{$delta}-institution-affiliation]", "removeAttr", ["readonly"]));
+        //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "removeAttr", ["readonly"]));
 
       }
     }
