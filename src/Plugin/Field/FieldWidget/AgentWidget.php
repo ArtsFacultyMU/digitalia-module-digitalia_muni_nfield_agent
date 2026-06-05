@@ -487,7 +487,7 @@ final class AgentWidget extends WidgetBase {
       if ($decoded) {
         $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-{$prefill_field}]", "val", [$display_name]));
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-ror]", "val", [$decoded["id"]]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-ror]", "val", [array_pop(explode("/", $decoded["id"]))]));
       } else {
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "removeAttr", ["readonly"]));
 

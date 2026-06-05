@@ -95,7 +95,7 @@ final class AgentDefaultFormatter extends FormatterBase {
         $element[$delta]['orcid'] = [
           '#type' => 'item',
           '#title' => $this->t('ORCID'),
-          '#markup' => $item->orcid,
+          '#markup' => "<a href=\"https://orcid.org/{$item->orcid}\" target=\"_blank\">{$item->orcid}</a>",
         ];
       }
 
@@ -119,7 +119,7 @@ final class AgentDefaultFormatter extends FormatterBase {
         $element[$delta]['ror'] = [
           '#type' => 'item',
           '#title' => $this->t('ROR'),
-          '#markup' => $item->ror,
+          '#markup' => "<a href=\"https://ror.org/{$item->ror}\" target=\"_blank\">{$item->ror}</a>",
         ];
       }
 

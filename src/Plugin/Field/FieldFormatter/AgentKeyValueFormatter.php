@@ -127,7 +127,7 @@ final class AgentKeyValueFormatter extends FormatterBase {
             ],
             [
               'data' => [
-                '#markup' => $item->orcid,
+                '#markup' => "<a href=\"https://orcid.org/{$item->orcid}\" target=\"_blank\">{$item->orcid}</a>",
               ],
             ],
           ],
@@ -187,7 +187,7 @@ final class AgentKeyValueFormatter extends FormatterBase {
             ],
             [
               'data' => [
-                '#markup' => $item->ror,
+                '#markup' => "<a href=\"https://ror.org/{$item->ror}\" target=\"_blank\">{$item->ror}</a>",
               ],
             ],
           ],

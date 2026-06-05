@@ -74,13 +74,13 @@ final class AgentTableFormatter extends FormatterBase {
 
       $row[]['#markup'] = $item->name;
 
-      $row[]['#markup'] = $item->orcid;
+      $row[]['#markup'] = "<a href=\"https://orcid.org/{$item->orcid}\" target=\"_blank\">{$item->orcid}</a>";
 
       $row[]['#markup'] = $item->first_names;
 
       $row[]['#markup'] = $item->last_names;
 
-      $row[]['#markup'] = $item->ror;
+      $row[]['#markup'] = "<a href=\"https://ror.org/{$item->ror}\" target=\"_blank\">{$item->ror}</a>";
 
       $row[]['#markup'] = $item->institution_affiliation;
 
