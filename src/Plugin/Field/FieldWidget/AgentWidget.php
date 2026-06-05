@@ -78,10 +78,6 @@ final class AgentWidget extends WidgetBase {
       '#title' => $this->t('Agent type'),
       '#options' => ['' => $this->t('- Select a value -')] + AgentItem::allowedAgentTypeValues(),
       '#default_value' => $items[$delta]->agent_type ?? NULL,
-      '#ajax' => [
-        'callback' => [$this, 'updateInstitutionAffiliationTitle'],
-        'event' => 'change'
-      ]
     ];
 
     $element['agent_tid'] = [
@@ -180,24 +176,17 @@ final class AgentWidget extends WidgetBase {
 
     $element['institution_affiliation'] = [
       '#type' => 'textarea',
-      '#title' => $this->t('Institution (Affiliation if person)'),
+      '#title' => $this->t('Affiliation'),
       '#default_value' => $items[$delta]->institution_affiliation ?? NULL,
       '#rows' => 2,
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
-            ['value' => 'person'], 'or', ['value' => 'organisation']
+            ['value' => 'person'],
           ],
         ],
       ],
     ];
-
-    if ($element['agent_type']['#default_value'] === 'person') {
-      $element['institution_affiliation']['#title'] = 'Affiliation';
-    }
-    if ($element['agent_type']['#default_value'] === 'organisation') {
-      $element['institution_affiliation']['#title'] = 'Institution';
-    }
 
     $element['department_tid'] = [
       '#type' => 'textfield',
@@ -443,31 +432,6 @@ final class AgentWidget extends WidgetBase {
     }
   }
 
-  public function updateInstitutionAffiliationTitle(array &$form, FormStateInterface $form_state) {
-    $response = new AjaxResponse();
-
-    $clean_values = $form_state->cleanValues()->getValues();
-    $field_html_selector = str_replace("_", "-", $this->machine_name);
-    $subarray = array();
-    $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
-
-    $title = "";
-    foreach (array_keys($subarray[$this->machine_name]) as $delta) {
-      if ($subarray[$this->machine_name][$delta]["agent_type"] == "person") {
-        $title = "Affiliation";
-      }
-      if ($subarray[$this->machine_name][$delta]["agent_type"] == "organisation") {
-        $title = "Institution";
-      }
-
-      //$test = "[for=edit-{$field_html_selector}-{$delta}-institution-affiliation]";
-
-      $response->addCommand(new InvokeCommand("[for$={$field_html_selector}-{$delta}-institution-affiliation]", "text", [$title]));
-    }
-
-    return $response;
-  }
-
   public function populateFieldsORCID(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
@@ -504,7 +468,6 @@ final class AgentWidget extends WidgetBase {
     $subarray = array();
     $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
-
     foreach (array_keys($subarray[$this->machine_name]) as $delta) {
       $decoded = json_decode($subarray[$this->machine_name][$delta]['ror'], TRUE);
 
@@ -512,7 +475,6 @@ final class AgentWidget extends WidgetBase {
       if ($subarray[$this->machine_name][$delta]['agent_type'] === 'organisation') {
         $prefill_field = 'name';
       }
-
 
       $display_name = "";
       foreach ($decoded["names"]  as $name) {
