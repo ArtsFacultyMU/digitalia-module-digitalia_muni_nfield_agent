@@ -304,7 +304,7 @@ final class AgentWidget extends WidgetBase {
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
-            ['value' => 'person'], 'or', ['value' => 'organisation']
+            ['value' => 'NEVER'],
           ],
         ],
       ],
