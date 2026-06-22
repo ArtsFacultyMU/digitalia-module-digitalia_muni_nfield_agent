@@ -149,7 +149,7 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('First names'),
       '#default_value' => $items[$delta]->first_names ?? NULL,
-      '#rows' => 2,
+      '#rows' => 1,
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
@@ -163,7 +163,7 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('Last names'),
       '#default_value' => $items[$delta]->last_names ?? NULL,
-      '#rows' => 2,
+      '#rows' => 1,
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
@@ -178,7 +178,7 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('Affiliation'),
       '#default_value' => $items[$delta]->institution_affiliation ?? NULL,
-      '#rows' => 2,
+      '#rows' => 1,
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
@@ -205,7 +205,7 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('Department'),
       '#default_value' => $items[$delta]->department ?? NULL,
-      '#rows' => 2,
+      '#rows' => 1,
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [
@@ -288,6 +288,7 @@ final class AgentWidget extends WidgetBase {
       '#type' => 'textarea',
       '#title' => $this->t('Note'),
       '#default_value' => $items[$delta]->note ?? NULL,
+      '#rows' => 2,
       '#states' => [
         'visible' => [
           ":input[data-drupal-selector$={$machine_name_html}-{$delta}-agent-type]" => [

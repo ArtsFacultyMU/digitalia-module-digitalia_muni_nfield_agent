@@ -62,6 +62,7 @@ final class AgentBriefFormatter extends FormatterBase {
     foreach ($items as $delta => $item) {
       $orcid_ror = "";
       $affiliation = "";
+      $department = "";
       $name = "$item->name";
 
       if ($item->agent_type == "person") {
@@ -74,11 +75,11 @@ final class AgentBriefFormatter extends FormatterBase {
           if (!empty($item->ror)) {
             $affiliation .= " <a href=\"https://ror.org/{$item->ror}\" target=\"_blank\"><img src=\"/themes/custom/islandora_muni/images/ror-icon-rgb.svg\" width=\"20px\"/></a>";
           }
-
-          if (!empty($item->department)){
-            $affiliation .= ", {$item->department}";
-          }
         }
+      }
+
+      if ($item->department) {
+        $department = ", {$item->department}";
       }
 
       if ($item->agent_type == "organisation") {
@@ -100,7 +101,7 @@ final class AgentBriefFormatter extends FormatterBase {
         $element[$delta]['name'] = [
           //'#type' => 'item',
           //'#title' => $this->t('Name'),
-          '#markup' => "{$name}{$orcid_ror}{$affiliation}",
+          '#markup' => "{$name}{$orcid_ror}{$affiliation}{$department}",
         ];
       }
     }
