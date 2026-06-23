@@ -64,6 +64,7 @@ final class AgentBriefFormatter extends FormatterBase {
       $affiliation = "";
       $department = "";
       $name = "$item->name";
+      $role = "";
 
       if ($item->agent_type == "person") {
         if ($item->orcid) {
@@ -97,11 +98,15 @@ final class AgentBriefFormatter extends FormatterBase {
         }
       }
 
+      if ($item->role) {
+        $role = "{$item->role}: ";
+      }
+
       if ($item->name) {
         $element[$delta]['name'] = [
           //'#type' => 'item',
           //'#title' => $this->t('Name'),
-          '#markup' => "{$name}{$orcid_ror}{$affiliation}{$department}",
+          '#markup' => "{$role}{$name}{$orcid_ror}{$affiliation}{$department}",
         ];
       }
     }
