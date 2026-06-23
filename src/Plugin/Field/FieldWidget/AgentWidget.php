@@ -93,7 +93,16 @@ final class AgentWidget extends WidgetBase {
       ],
     ];
 
-    $element['orcid'] = [
+    $element['identifiers'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Identifiers'),
+      '#open' => TRUE,
+      '#attributes' => [
+        'class' => ['dm_identifiers_details'],
+      ],
+    ];
+
+    $element['identifiers']['orcid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ORCID'),
       '#default_value' => $items[$delta]->orcid ?? NULL,
@@ -112,7 +121,7 @@ final class AgentWidget extends WidgetBase {
       ]
     ];
 
-    $element['ror'] = [
+    $element['identifiers']['ror'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ROR'),
       '#default_value' => $items[$delta]->ror ?? NULL,
@@ -145,7 +154,15 @@ final class AgentWidget extends WidgetBase {
     ];
 
 
-    $element['first_names'] = [
+    $element['names'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Names'),
+      '#open' => TRUE,
+      '#attributes' => [
+        'class' => ['dm_names_details'],
+      ],
+    ];
+    $element['names']['first_names'] = [
       '#type' => 'textarea',
       '#title' => $this->t('First names'),
       '#default_value' => $items[$delta]->first_names ?? NULL,
@@ -159,7 +176,7 @@ final class AgentWidget extends WidgetBase {
       ],
     ];
 
-    $element['last_names'] = [
+    $element['names']['last_names'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Last names'),
       '#default_value' => $items[$delta]->last_names ?? NULL,
@@ -374,18 +391,24 @@ final class AgentWidget extends WidgetBase {
       if ($value['name'] === '') {
         $values[$delta]['name'] = NULL;
       }
-      if ($value['orcid'] === '') {
-        $values[$delta]['orcid'] = NULL;
+      if ($value['names']['first_names'] === '') {
+        $values[$delta]['names']['first_names'] = NULL;
       }
-      if ($value['first_names'] === '') {
-        $values[$delta]['first_names'] = NULL;
+      if ($value['names']['last_names'] === '') {
+        $values[$delta]['names']['last_names'] = NULL;
       }
-      if ($value['last_names'] === '') {
-        $values[$delta]['last_names'] = NULL;
+      $values[$delta]['first_names'] = $values[$delta]['names']['first_names'];
+      $values[$delta]['last_names'] = $values[$delta]['names']['last_names'];
+
+      if ($value['identifiers']['orcid'] === '') {
+        $values[$delta]['identifiers']['orcid'] = NULL;
       }
-      if ($value['ror'] === '') {
-        $values[$delta]['ror'] = NULL;
+      if ($value['identifiers']['ror'] === '') {
+        $values[$delta]['identifiers']['ror'] = NULL;
       }
+      $values[$delta]['orcid'] = $values[$delta]['identifiers']['orcid'];
+      $values[$delta]['ror'] = $values[$delta]['identifiers']['ror'];
+
       if ($value['institution_affiliation'] === '') {
         $values[$delta]['institution_affiliation'] = NULL;
       }
@@ -442,14 +465,14 @@ final class AgentWidget extends WidgetBase {
     $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
     foreach (array_keys($subarray[$this->machine_name]) as $delta) {
-      $decoded = json_decode($subarray[$this->machine_name][$delta]['orcid'], TRUE);
+      $decoded = json_decode($subarray[$this->machine_name][$delta]['identifiers']['orcid'], TRUE);
       $full_name = $decoded["given-names"] . " " . $decoded["family-names"];
       if ($decoded) {
-        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-first-names]", "val", [$decoded["given-names"]]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-names-first-names]", "val", [$decoded["given-names"]]));
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-first-names]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-last-names]", "val", [$decoded["family-names"]]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-names-last-names]", "val", [$decoded["family-names"]]));
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-last-names]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-orcid]", "val", [$decoded["orcid-id"]]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-identifiers-orcid]", "val", [$decoded["orcid-id"]]));
 
         $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-name]", "val", [$full_name]));
       } else {
@@ -470,7 +493,7 @@ final class AgentWidget extends WidgetBase {
     $this->findKeyInArray($this->machine_name, $clean_values, $subarray);
 
     foreach (array_keys($subarray[$this->machine_name]) as $delta) {
-      $decoded = json_decode($subarray[$this->machine_name][$delta]['ror'], TRUE);
+      $decoded = json_decode($subarray[$this->machine_name][$delta]['identifiers']['ror'], TRUE);
 
       $prefill_field = 'institution-affiliation';
       if ($subarray[$this->machine_name][$delta]['agent_type'] === 'organisation') {
@@ -488,7 +511,7 @@ final class AgentWidget extends WidgetBase {
       if ($decoded) {
         $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-{$prefill_field}]", "val", [$display_name]));
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "attr", ["readonly", "readonly"]));
-        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-ror]", "val", [array_pop(explode("/", $decoded["id"]))]));
+        $response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-identifiers-ror]", "val", [array_pop(explode("/", $decoded["id"]))]));
       } else {
         //$response->addCommand(new InvokeCommand("[data-drupal-selector$={$field_html_selector}-{$delta}-institution-affiliation]", "removeAttr", ["readonly"]));
 

@@ -1,3 +1,30 @@
 tr.odd .dm-field-agent-elements .form-item {
   margin-bottom: 8px;
 }
+
+/**
+div.tabledrag-toggle-weight-wrapper,
+div.field--widget-text-textarea div.filter-wrapper
+{
+  display: none;
+}
+ **/
+
+
+
+details.dm_names_details,
+details.dm_identifiers_details
+{
+  border: none;
+}
+
+details.dm_names_details summary,
+details.dm_identifiers_details summary {
+  display: none;
+}
+
+details.dm_names_details div.details-wrapper,
+details.dm_identifiers_details div.details-wrapper {
+  display: flex;
+  margin: 0;
+}
