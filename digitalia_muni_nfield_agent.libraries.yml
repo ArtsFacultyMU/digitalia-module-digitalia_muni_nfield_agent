@@ -2,3 +2,4 @@ dm_field_agent:
   css:
     component:
       css/dm-field-agent-widget.css: {}
+      css/dm-field-agent-formatter.css: {}
