@@ -31,6 +31,7 @@ final class AgentBriefFormatter extends FormatterBase {
       'contact' => FALSE,
       'link' => FALSE,
       'note' => FALSE,
+      'inline' => FALSE,
       ] + parent::defaultSettings();
   }
 
@@ -73,6 +74,13 @@ final class AgentBriefFormatter extends FormatterBase {
       '#return_value' => 1,
       '#description' => $this->t('If checked, a note will be displayed.'),
     ];
+      $element['inline'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Display inline'),
+      '#default_value' => $this->getSetting('inline'),
+      '#return_value' => 1,
+      '#description' => $this->t('If checked, the agent will be displayed inline.'),
+    ];
     return $element;
   }
 
@@ -86,6 +94,7 @@ final class AgentBriefFormatter extends FormatterBase {
       $this->t('Display contact information: @contact', ['@contact' => (bool) $this->getSetting('contact') ? 'Yes' : 'No']),
       $this->t('Display link: @link', ['@link' => (bool) $this->getSetting('link') ? 'Yes' : 'No']),
       $this->t('Display note: @note', ['@note' => (bool) $this->getSetting('note') ? 'Yes' : 'No']),
+      $this->t('Display inline: @inline', ['@inline' => (bool) $this->getSetting('inline') ? 'Yes' : 'No']),
     ];
   }
 
@@ -104,7 +113,7 @@ final class AgentBriefFormatter extends FormatterBase {
     $show_contact = filter_var($this->getSetting('contact'), FILTER_VALIDATE_BOOLEAN);
     $show_link = filter_var($this->getSetting('link'), FILTER_VALIDATE_BOOLEAN);
     $show_note = filter_var($this->getSetting('note'), FILTER_VALIDATE_BOOLEAN);
-
+    $show_inline = filter_var($this->getSetting('inline'), FILTER_VALIDATE_BOOLEAN);
     foreach ($items as $delta => $item) {
       $orcid_ror = "";
       $affiliation = "";
@@ -178,6 +187,23 @@ final class AgentBriefFormatter extends FormatterBase {
     }
 
     $element['#attached']['library'][] = 'digitalia_muni_nfield_agent/dm_field_agent';
+
+    if ($show_inline) {
+      $parts = [];
+      foreach ($element as $key => $value) {
+        if (is_int($key) && isset($value['name']['#markup'])) {
+          $parts[] = $value['name']['#markup'];
+        }
+      }
+      $inline_markup = implode('; ', $parts);
+      $inline = [
+        '#markup' => $inline_markup,
+      ];
+      if (isset($element['#attached'])) {
+        $inline['#attached'] = $element['#attached'];
+      }
+      return $inline;
+    }
 
     return $element;
   }
