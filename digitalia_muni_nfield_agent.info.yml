@@ -1,7 +1,7 @@
 name: 'Digitalia muni nfield agent'
 type: module
-description: '@todo Add description.'
-package: '@todo Add package'
-core_version_requirement: ^10
+description: 'Nfield representing agent'
+package: 'digitalia'
+core_version_requirement: ^10 || ^11
 dependencies:
   - drupal:digitalia_muni_autocomplete_remote
